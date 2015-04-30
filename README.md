@@ -20,7 +20,7 @@ Get identifier details  | /identifier/identifier_name   | `GET`     | n/a       
 Create identifier       | /identifier/identifier_name   | `POST`    | Example 2     | true/false
 Delete identifier       | /identifier/identifier_name   | `DELETE`  | n/a           | true/false
 
-> Note: Deleting a identifier will remove associated links.
+- Note: Deleting a identifier will remove associated links.
 
 ####Example 1 - identifier JSON response object:
 
@@ -48,9 +48,9 @@ create link     | /link                  | `POST`    | Example 3 | true/false
 get link        | /link/vname1/vname2  | `GET`     | n/a       | Example 4
 delete link     | /link/vname1/vname2  | `DELETE`  | n/a       | true/false
 
-> A link name is created by appending the linked identifiers with a slash (/) in the middle, Ex: name1/name2.
-> Missing vertices will be created, when adding a link.
-> Links are not directed so link names are symmetric.  That is name1/name2 is the same as name2/name1.
+- A link name is created by appending the linked identifiers with a slash (/) in the middle, Ex: name1/name2.
+- Missing vertices will be created, when adding a link.
+- Links are not directed so link names are symmetric.  That is name1/name2 is the same as name2/name1.
 
 ####Example 3 - create link request body
 
@@ -153,15 +153,15 @@ search on identifier  | /identifier/vname1/search    |   `POST`  |   Example 6 |
   }
 }
 ```
-> max_depth - maximum search depth from starting identifier (e.g., vname1)
-> traversal - graph traversal algorithm ("depth" for depth first or "breadth" for breadth first)
-> max_size - maximum number of identifiers in the result set
-> match_metadata - only follow links from identifiers with metadata matching these key/value pairs.  The identifier's metadata must match all of the key.values pairs.
-> match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs.
-> results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included.
-> match_terminal - do not follow links from an identifer that has metadata matching these key/value pairs.
-> result is a list of identifiers and links.
-> FIRST RELEASE implements only max_depth, traversal, and max_size.
+- max_depth - maximum search depth from starting identifier (e.g., vname1)
+- traversal - graph traversal algorithm ("depth" for depth first or "breadth" for breadth first)
+- max_size - maximum number of identifiers in the result set
+- match_metadata - only follow links from identifiers with metadata matching these key/value pairs.  The identifier's metadata must match all of the key.values pairs.
+- match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs.
+- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included.
+- match_terminal - do not follow links from an identifer that has metadata matching these key/value pairs.
+- result is a list of identifiers and links.
+- FIRST RELEASE implements only max_depth, traversal, and max_size.
 
 ###Example 7 - search response JSON
 ```
