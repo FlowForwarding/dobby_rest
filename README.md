@@ -104,8 +104,6 @@ delete link     | /link/vname1/vname2  | `DELETE`  | n/a       | true/false
 }
 ```
 
--------
-
 ###Metadata 
 
 Description | URI | Method | Request Body | Response Body
