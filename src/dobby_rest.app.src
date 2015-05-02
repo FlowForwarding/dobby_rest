@@ -1,0 +1,22 @@
+{application, dobby_rest,
+ [
+  {description, "RESTish interface to dobby"},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib,
+                  sasl,
+                  syntax_tools,
+                  compiler,
+                  crypto,
+                  ranch,
+                  cowlib,
+                  cowboy,
+                  jiffy,
+                  lager,
+                  recon
+                 ]},
+  {mod, { dobby_rest_app, []}},
+  {env, []}
+ ]}.

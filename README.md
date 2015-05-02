@@ -1,6 +1,10 @@
 # dobby_rest
 RESTish interface to dobby, the graph store
 
+###Testing
+You can use the Google Chrome extension [Postman](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm?hl=en)
+to test the REST calls.  Import the dobby_rest.json collection for some examples.
+
 ###HTTP response codes
 
 Response code | Description
@@ -28,8 +32,16 @@ Delete identifier       | /identifier/identifier_name   | `DELETE`  | n/a       
 {
     "identifier":"name2",
     "metadata":{
-       "key":"1",
-       "key2":"2"
+       "key":{
+         "value":"1",
+         "timestamp":"2015-05-01T23:22:14Z",
+         "publisher_id":"dobby_rest"
+       },
+       "key2":{
+         "value":"2",
+         "timestamp":"2015-05-01T23:22:14Z",
+         "publisher_id":"dobby_rest"
+       }
     }
 }
 ```
@@ -110,8 +122,8 @@ Description | URI | Method | Request Body | Response Body
 --- | --- | --- | --- | ---
 get identifier metadata             | /identifier/identifier_name/metadata       | `GET`     | n/a       | Example 5
 get link metadata                   | /link/vname1/vname2/metadata             | `GET`     | n/a       | Example 5
-get identifier metadata property    | /identifier/identifier_name/ip             | `GET`     | n/a       | "1"
-get link metadata property          | /link/vname/vname2/creation_datetime     | `GET`     | n/a       | "2014-07-16T19:20:30+01:00"
+get identifier metadata property    | /identifier/identifier_name/metadata/ip             | `GET`     | n/a       | "1"
+get link metadata property          | /link/vname/vname2/metadata/creation_datetime     | `GET`     | n/a       | "2014-07-16T19:20:30+01:00"
 add identifier metadata             | /identifier/identifier_name/metadata/ip    | `POST`    | "2.2.2.2" | true/false
 add link metadata                   | /link/vname1/vname2/metadata/key          | `POST`    | "value"   | true/false
 remove identifier metadata          | /identifier/identifier_name/metadata/ip    | `DELETE`  | n/a       | true/false
