@@ -33,7 +33,7 @@ Delete identifier       | /identifier/identifier_name   | `DELETE`  | n/a       
     "identifier":"name2",
     "metadata":{
        "key":{
-         "value":"1",
+         "value":1,
          "timestamp":"2015-05-01T23:22:14Z",
          "publisher_id":"dobby_rest"
        },
@@ -49,7 +49,7 @@ Delete identifier       | /identifier/identifier_name   | `DELETE`  | n/a       
 ####Example 2 - create identifier JSON request body
 
 ```
-{"metadata":{"key":"1","key2":"2"}}
+{"metadata":{"key":1,"key2":"2"}}
 ```
 
 ###Links
@@ -148,9 +148,9 @@ search on identifier  | /identifier/vname1/search    |   `POST`  |   Example 6 |
 ###Example 6 - search request JSON body
 ```
 {
-  "max_depth":"1",
+  "max_depth":1,
   "traversal":"depth",
-  "max_size":"100",
+  "max_size":100,
   "match_metadata":{
       "type":"IPV4"
   },
@@ -171,7 +171,7 @@ search on identifier  | /identifier/vname1/search    |   `POST`  |   Example 6 |
 - results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included.
 - match_terminal - do not follow links from an identifer that has metadata matching these key/value pairs.
 - result is a list of identifiers and links.
-- FIRST RELEASE implements only max_depth, traversal, and max_size.
+- FIRST RELEASE implements only max_depth and traversal.
 
 ###Example 7 - search response JSON
 ```
@@ -179,21 +179,41 @@ search on identifier  | /identifier/vname1/search    |   `POST`  |   Example 6 |
     {
       "identifier":"vname1",
       "metadata":{
-        "type":"resource",
-        "ip":"9.9.9.9"
+        "type":{
+          "value":"resource",
+           "timestamp":"2015-05-01T23:22:14Z",
+           "publisher_id":"dobby_rest"
+        },
+        "ip":{
+          "value":"9.9.9.9"
+           "timestamp":"2015-05-01T23:22:14Z",
+           "publisher_id":"dobby_rest"
+        }
       }
     },
     {
       "identifier":"vname2",
       "metadata":{
-        "type":"resource",
-        "ip":"8.8.8.8"
+        "type":{
+          "value":"resource",
+           "timestamp":"2015-05-01T23:22:14Z",
+           "publisher_id":"dobby_rest"
+        },
+        "ip":{
+          "value":"8.8.8.8"
+           "timestamp":"2015-05-01T23:22:14Z",
+           "publisher_id":"dobby_rest"
+        }
       }
     },
     {
       "link":"vname1/vname2"
       "metadata":{
-        "type":"connection"
+        "type":{
+          "value":"connection"
+           "timestamp":"2015-05-01T23:22:14Z",
+           "publisher_id":"dobby_rest"
+        }
       }
     }
 ]
