@@ -1,6 +1,20 @@
 # dobby_rest
 RESTish interface to dobby, the graph store
 
+###Requirements
+1. [dobby](https://github.com/shivarammysore/dobby).
+2. Erlang R17
+
+###Building
+1. make compile
+2. make generate
+
+###Running
+1. dobby must be running
+2. rel/dobby_rest/bin/dobby_rest console
+
+Note that some request errors are reported to the dobby_rest console.  Check the logs if dobby_rest returns status 500 to the REST client.
+
 ###Testing
 You can use the Google Chrome extension [Postman](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm?hl=en)
 to test the REST calls.  Import the dobby_rest.json collection for some examples.
@@ -24,7 +38,8 @@ Get identifier details  | /identifier/identifier_name   | `GET`     | n/a       
 Create identifier       | /identifier/identifier_name   | `POST`    | Example 2     | true/false
 Delete identifier       | /identifier/identifier_name   | `DELETE`  | n/a           | true/false
 
-- Note: Deleting a identifier will remove associated links.
+- In the response object, the identifier value is URL encoded.
+- Deleting a identifier will remove associated links.
 
 ####Example 1 - identifier JSON response object:
 
@@ -52,7 +67,7 @@ Delete identifier       | /identifier/identifier_name   | `DELETE`  | n/a       
 {"metadata":{"key":1,"key2":"2"}}
 ```
 
-###Links
+###Links (not implemented)
 
 Description | URI | Method | Request Body | Response Body
 --- | --- | --- | --- | ---
@@ -116,7 +131,7 @@ delete link     | /link/vname1/vname2  | `DELETE`  | n/a       | true/false
 }
 ```
 
-###Metadata 
+###Metadata (not implemented)
 
 Description | URI | Method | Request Body | Response Body
 --- | --- | --- | --- | ---
@@ -143,7 +158,9 @@ remove link metadata                | /link/vname1/vname2/metadata/key          
 
 Description | URI | Method | Request Body | Response Body
 --- | --- | --- | --- | ---
-search on identifier  | /identifier/vname1/search    |   `POST`  |   Example 6 | Example 7
+search on identifier  | /identifier/vname1%2F2/search    |   `POST`  |   Example 6 | Example 7
+
+- In the response object, the identifier value and the identifiers in the link value are URL encoded.
 
 ###Example 6 - search request JSON body
 ```
@@ -165,19 +182,18 @@ search on identifier  | /identifier/vname1/search    |   `POST`  |   Example 6 |
 ```
 - max_depth - maximum search depth from starting identifier (e.g., vname1)
 - traversal - graph traversal algorithm ("depth" for depth first or "breadth" for breadth first)
-- max_size - maximum number of identifiers in the result set
-- match_metadata - only follow links from identifiers with metadata matching these key/value pairs.  The identifier's metadata must match all of the key.values pairs.
-- match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs.
-- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included.
-- match_terminal - do not follow links from an identifer that has metadata matching these key/value pairs.
+- max_size - maximum number of identifiers in the result set (not implemented)
+- match_metadata - only follow links from identifiers with metadata matching these key/value pairs.  The identifier's metadata must match all of the key.values pairs. (not implemented)
+- match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs. (not implemented)
+- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included. (not implemented)
+- match_terminal - do not follow links from an identifer that has metadata matching these key/value pairs. (not implemented)
 - result is a list of identifiers and links.
-- FIRST RELEASE implements only max_depth and traversal.
 
 ###Example 7 - search response JSON
 ```
 [
     {
-      "identifier":"vname1",
+      "identifier":"vname1%2F2",
       "metadata":{
         "type":{
           "value":"resource",
@@ -207,7 +223,7 @@ search on identifier  | /identifier/vname1/search    |   `POST`  |   Example 6 |
       }
     },
     {
-      "link":"vname1/vname2"
+      "link":"vname1%2F2/vname2"
       "metadata":{
         "type":{
           "value":"connection"
