@@ -1,6 +1,6 @@
-= Sample File
+# Sample File
 
-== Loading the sample
+## Loading the sample
 Load the sample data into dobby by running the dby_bulk:import function 
 on the dobby console:
 
