@@ -1,0 +1,392 @@
+[
+    {
+	"identifier": "lincx11",
+	"metadata": {"type": "of_switch","datapath_id": "00:00:00:16:3E:5F:11:00"}
+    },
+    {
+	"identifier": "OFS1-table-0",
+	"metadata": { "type": "of_flow_table","table_no": 0 }
+    },
+    {
+    "link": ["lincx11", "OFS1-table-0"],
+    "metadata": { "type": "of_resource" }
+    },
+    {
+	"identifier": "OFS1/OFP1",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS1/OFP2",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS1/OFP3",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS1/OFP4",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS1/OFP5",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS1/OFP6",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"link": ["OFS1/OFP1", "lincx11"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS1/OFP2", "lincx11"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS1/OFP3", "lincx11"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS1/OFP4", "lincx11"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS1/OFP5", "lincx11"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS1/OFP6", "lincx11"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"identifier": "gateway",
+	"metadata": {
+	    "type": "endpoint",
+	    "ip": "255.255.255.255",
+	    "netmask": "0.0.0.0",
+	    "use_bridge_rules": true }
+    },
+    {
+   	"link": ["gateway", "OFS1/OFP1"],
+   	"metadata": { "type": "connected_to" }
+    },
+    {
+    "identifier": "pi-32",
+    "metadata": { "type": "endpoint", "ip": "10.48.33.132" }
+    }, 
+    {
+	"identifier": "pi-30",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.130" }
+    },
+    {
+	"identifier": "pi-26",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.126" }
+    },  
+    {
+	"identifier": "pi-29",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.129" }
+    },  
+    {
+	"link": ["pi-32", "OFS1/OFP3"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-29", "OFS1/OFP2"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-26", "OFS1/OFP4"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-30", "OFS1/OFP5"],
+	"metadata": { "type": "connected_to" }
+    },
+    
+    { 
+    "identifier": "lincx12",
+	"metadata": {"type": "of_switch", "datapath_id": "00:00:00:16:3E:5F:12:00"}
+    },
+    {
+	"identifier": "OFS2-table-0",
+	"metadata": {"type": "of_flow_table","table_no": 0 }
+    },
+    {
+	"identifier": "OFS2/OFP1",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS2/OFP2",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS2/OFP3",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS2/OFP4",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS2/OFP5",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS2/OFP6",
+	"metadata": { "type": "of_port" }
+    },
+    {
+    "link": ["lincx12", "OFS2-table-0"],
+    "metadata": { "type": "of_resource" }
+    },
+    {
+	"link": ["OFS2/OFP1", "lincx12"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS2/OFP2", "lincx12"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS2/OFP3", "lincx12"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS2/OFP4", "lincx12"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS2/OFP5", "lincx12"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS2/OFP6", "lincx12"],
+	"metadata": { "type": "port_of" }
+    },
+
+    {
+	"identifier": "pi-07",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.107" }
+    },  
+    {
+	"identifier": "pi-06",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.106" }
+    },  
+    {
+	"identifier": "pi-08",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.108" }
+    },  
+    {
+	"identifier": "pi-16",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.116" }
+    },    
+
+    {
+	"link": ["pi-07", "OFS2/OFP2"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-16", "OFS2/OFP3"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-06", "OFS2/OFP4"],
+	"metadata": { "type": "connected_to" }
+    },
+    
+    { 
+    "identifier": "lincx13",
+	"metadata": {"type": "of_switch", "datapath_id": "00:00:00:16:3E:5F:13:00"}
+    },
+    {
+	"identifier": "OFS3-table-0",
+	"metadata": {"type": "of_flow_table","table_no": 0 }
+    },
+    {
+	"identifier": "OFS3/OFP1",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS3/OFP2",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS3/OFP3",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS3/OFP4",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS3/OFP5",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS3/OFP6",
+	"metadata": { "type": "of_port" }
+    },
+    {
+    "link": ["lincx13", "OFS3-table-0"],
+    "metadata": { "type": "of_resource" }
+    },
+    {
+	"link": ["OFS3/OFP1", "lincx13"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS3/OFP2", "lincx13"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS3/OFP3", "lincx13"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS3/OFP4", "lincx13"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS3/OFP5", "lincx13"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS3/OFP6", "lincx13"],
+	"metadata": { "type": "port_of" }
+    },
+    
+    {
+	"identifier": "pi-27",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.127" }
+    },  
+    {
+	"identifier": "pi-28",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.128" }
+    },  
+    {
+	"identifier": "pi-31",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.131" }
+    },  
+    {
+	"identifier": "pi-25",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.125" }
+    },    
+
+    {
+	"link": ["pi-27", "OFS3/OFP4"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-28", "OFS3/OFP3"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-31", "OFS3/OFP2"],
+	"metadata": { "type": "connected_to" }
+    },
+
+    { 
+    "identifier": "lincx21",
+	"metadata": {"type": "of_switch", "datapath_id": "00:00:00:16:3E:5F:21:00"}
+    },
+    {
+	"identifier": "OFS4-table-0",
+	"metadata": {"type": "of_flow_table","table_no": 0 }
+    },
+    {
+	"identifier": "OFS4/OFP1",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS4/OFP2",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS4/OFP3",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS4/OFP4",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS4/OFP5",
+	"metadata": { "type": "of_port" }
+    },
+    {
+	"identifier": "OFS4/OFP6",
+	"metadata": { "type": "of_port" }
+    },
+    {
+    "link": ["lincx21", "OFS4-table-0"],
+    "metadata": { "type": "of_resource" }
+    },
+    {
+	"link": ["OFS4/OFP1", "lincx21"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS4/OFP2", "lincx21"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS4/OFP3", "lincx21"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS4/OFP4", "lincx21"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS4/OFP5", "lincx21"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"link": ["OFS4/OFP6", "lincx21"],
+	"metadata": { "type": "port_of" }
+    },
+    {
+	"identifier": "pi-02",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.102" }
+    },  
+    {
+	"identifier": "pi-03",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.103" }
+    },  
+    {
+	"identifier": "pi-04",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.104" }
+    },  
+    {
+	"identifier": "pi-09",
+	"metadata": { "type": "endpoint", "ip": "10.48.33.109" }
+    },    
+    {
+	"link": ["pi-04", "OFS4/OFP5"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-09", "OFS4/OFP4"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-02", "OFS4/OFP3"],
+	"metadata": { "type": "connected_to" }
+    },
+    {
+	"link": ["pi-03", "OFS4/OFP2"],
+	"metadata": { "type": "connected_to" }
+    },
+{
+"link": ["OFS1/OFP6", "OFS2/OFP5"],
+"metadata": { "type": "connected_to" }
+},
+{
+"link": ["OFS2/OFP6", "OFS3/OFP5"],
+"metadata": { "type": "connected_to" }
+},
+{
+"link": ["OFS3/OFP6", "OFS4/OFP6"],
+"metadata": { "type": "connected_to" }
+}
