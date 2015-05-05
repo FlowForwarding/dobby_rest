@@ -16,7 +16,7 @@ to_json(Identifier, Metadata) ->
 
 to_resource(Identifier) ->
     % return resource URI for identifier
-    list_to_binary([<<"/identifier/">>, Identifier]).
+    iolist_to_binary([<<"/identifier/">>, uri_encode(Identifier)]).
 
 to_term({KeyValues}) ->
     [{Key, term_metadata(Value)} || {Key, Value} <- KeyValues].
@@ -47,7 +47,7 @@ search(Identifier, Options) ->
 
 to_jiffy(Identifier, Metadata) ->
     {[
-        {<<"identifier">>, Identifier},
+        {<<"identifier">>, uri_encode(Identifier)},
         {<<"metdata">>, json_metadata(Metadata)}
     ]}.
 
@@ -58,7 +58,7 @@ to_jiffy(Id1, Id2, Metadata) ->
     ]}.
 
 to_link(Id1, Id2) ->
-    list_to_binary([Id1, $/, Id2]).
+    iolist_to_binary([uri_encode(Id1), $/, uri_encode(Id2)]).
 
 json_metadata(true) ->
     true;
@@ -140,3 +140,8 @@ format_element({identifier, Identifier, Metadata}) ->
     to_jiffy(Identifier, Metadata);
 format_element({link, Id1, Id2, Metadata}) ->
     to_jiffy(Id1, Id2, Metadata).
+
+uri_encode(B) when is_binary(B) ->
+    list_to_binary(http_uri:encode(binary_to_list(B)));
+uri_encode(S) ->
+    http_uri:encode(S).
