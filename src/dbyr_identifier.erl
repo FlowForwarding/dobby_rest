@@ -48,7 +48,7 @@ search(Identifier, Options) ->
 to_jiffy(Identifier, Metadata) ->
     {[
         {<<"identifier">>, uri_encode(Identifier)},
-        {<<"metdata">>, json_metadata(Metadata)}
+        {<<"metdaata">>, json_metadata(Metadata)}
     ]}.
 
 to_jiffy(Id1, Id2, Metadata) ->
