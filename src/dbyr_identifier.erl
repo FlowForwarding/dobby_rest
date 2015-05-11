@@ -33,12 +33,19 @@ publish(Identifier, Metadata) ->
 search(Identifier, Options) ->
     % XXX optimization - only install module once, not once per search
     {module, ?MODULE} = dby:install(?MODULE),
-    case dby:search(subgraph(Options), dict:new(), Identifier,
+    case dby:search(subgraph(Options), {dict:new(), dict:new()}, Identifier,
                                 [{loop, link} | search_options(Options)]) of
         {error, Reason} ->
             {error, Reason};
-        GraphD ->
-            [format_element(E) || {_, E} <- dict:to_list(GraphD)]
+        {Identifiers, Links} ->
+            {[
+                {<<"identifiers">>, 
+                    [to_jiffy(I, M) ||
+                                    {_, {I, M}} <- dict:to_list(Identifiers)]},
+                {<<"links">>, 
+                    [to_jiffy(I1, I2, L) ||
+                                    {_, {I1, I2, L}} <- dict:to_list(Links)]}
+            ]}
     end.
 
 % ==============================================================================
@@ -120,26 +127,31 @@ search_options([_ | Rest], Acc) ->
 
 subgraph(_Options) ->
     % XXX use search options
-    fun(Identifier, Metadata, [], Acc) ->
+    fun(Identifier, Metadata, [], {Identifiers, Links}) ->
         {continue,
-            dict:store(Identifier, {identifier, Identifier, Metadata}, Acc)};
-       (Identifier, Metadata, [{Neighbor, _, LinkMetadata} | _], Acc) ->
+            {
+                dict:store(Identifier, {Identifier, Metadata}, Identifiers),
+                Links
+            }
+        };
+       (Identifier, Metadata, [{Neighbor, _, LinkMetadata} | _],
+                                                    {Identifiers, Links}) ->
         {continue, 
-            dict:store(Identifier, {identifier, Identifier, Metadata},
+            {
+                dict:store(Identifier,
+                            {Identifier, Metadata},
+                            Identifiers),
                 dict:store(normal_link(Identifier, Neighbor),
-                            {link, Identifier, Neighbor, LinkMetadata},
-                            Acc))}
+                            {Identifier, Neighbor, LinkMetadata},
+                            Links)
+            }
+        }
     end.
 
 normal_link(Id1, Id2) when Id1 < Id2 ->
     {Id1, Id2};
 normal_link(Id1, Id2) ->
     {Id2, Id1}.
-
-format_element({identifier, Identifier, Metadata}) ->
-    to_jiffy(Identifier, Metadata);
-format_element({link, Id1, Id2, Metadata}) ->
-    to_jiffy(Id1, Id2, Metadata).
 
 uri_encode(B) when is_binary(B) ->
     list_to_binary(http_uri:encode(binary_to_list(B)));
