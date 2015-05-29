@@ -183,10 +183,10 @@ search on identifier  | /identifier/vname1%2F2/search    |   `POST`  |   Example
 - max_depth - maximum search depth from starting identifier (e.g., vname1)
 - traversal - graph traversal algorithm ("depth" for depth first or "breadth" for breadth first)
 - max_size - maximum number of identifiers in the result set (not implemented)
-- match_metadata - only follow links from identifiers with metadata matching these key/value pairs.  The identifier's metadata must match all of the key.values pairs. (not implemented)
+- match_metadata - only follow links from identifiers with metadata matching these key/value pairs.  The identifier's metadata must match all of the key/value pairs.
 - match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs. (not implemented)
-- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included. (not implemented)
-- match_terminal - do not follow links from an identifer that has metadata matching these key/value pairs. (not implemented)
+- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included.
+- match_terminal - stop the search when the identifer has metadata matching these key/value pairs.  The identifier's metadata mush match all of the key/value pairs. The identifier and link is included in the result.
 - result is a list of identifiers and links.
 
 ###Example 7 - search response JSON

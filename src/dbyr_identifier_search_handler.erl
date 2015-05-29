@@ -83,7 +83,7 @@ search_options({Options}) ->
                               match_metadata => any,
                               match_links => any,
                               results_filter => all,
-                              match_terminal => any}).
+                              match_terminal => none}).
 
 search_options([], Options) ->
     Options;
