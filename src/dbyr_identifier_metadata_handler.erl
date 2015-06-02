@@ -1,4 +1,4 @@
--module(dbyr_identifier_handler).
+-module(dbyr_identifier_metadata_handler).
 
 -include("dbyr_logger.hrl").
 
@@ -21,9 +21,11 @@ init(_Transport, _Req, []) ->
 
 rest_init(Req0, _Opts) ->
     {Identifier, Req1} = cowboy_req:binding(identifier_val, Req0),
-    {ok, Req1, #{identifier => Identifier,
+    {Property, Req2} = cowboy_req:binding(property, Req1),
+    {ok, Req2, #{identifier => Identifier,
+                 property => Property,
                  exists => false,
-                 metadata => #{}}}.
+                 value => null}}.
 
 previously_existed(Req, State) -> 
     {false, Req, State}.
@@ -45,20 +47,25 @@ options(Req0, State) ->
                                                     <<"content-type">>, Req0),
     {ok, Req1, State}.
 
-resource_exists(Req0, #{identifier := Identifier} = State) ->
+resource_exists(Req0, #{identifier := Identifier,
+                        property := Property} = State) ->
     case dbyr_identifier:get_metadata(Identifier) of
         {error, Reason} -> 
             {ok, Req1} = cowboy_req:reply(500, [], stringify(Reason), Req0),
             {stop, Req1, State};
         [] ->
-            Req1 = set_cross_domain(Req0),
-            {false, Req1, State};
+            {false, Req0, State};
         Metadata ->
-            {true, Req0, State#{exists := true, metadata := Metadata}}
+            case maps:find(Property, Metadata) of
+                error ->
+                    {false, Req0, State};
+                {ok, Value} ->
+                    {true, Req0, State#{exists := true, value := Value}}
+            end
     end.
 
-delete_resource(Req0, #{identifier := Identifier} = State) ->
-    case dbyr_identifier:delete(Identifier) of
+delete_resource(Req0, #{identifier := Identifier, property := Property} = State) ->
+    case dbyr_identifier:delete_metadata(Identifier, Property) of
         {error, Reason} ->
             {ok, Req1} = cowboy_req:reply(500, [], stringify(Reason), Req0),
             {stop, Req1, State};
@@ -77,19 +84,19 @@ handle_json(Req0, State) ->
 handle_json_method(Req, #{exists := false} = State, <<"GET">>) ->
     {false, Req, State};
 handle_json_method(Req0, #{exists := true,
-                         identifier := Identifier,
-                         metadata := Metadata} = State, <<"GET">>) ->
+                         value := Value} = State, <<"GET">>) ->
     Req1 = set_cross_domain(Req0),
-    {dbyr_identifier:to_json(Identifier, Metadata), Req1, State};
-handle_json_method(Req0, #{identifier := Identifier} = State, <<"POST">>) ->
-    {Metadata, Req1} = case cowboy_req:body(Req0) of
+    {dbyr_identifier:metadata_to_json(Value), Req1, State};
+handle_json_method(Req0, #{identifier := Identifier,
+                           property := Property} = State, <<"POST">>) ->
+    {Value, Req1} = case cowboy_req:body(Req0) of
         {ok, <<>>, R1} ->
             {[], R1};
         {ok, Body, R1} ->
-            M = dbyr_identifier:to_term(post_metadata(Body)),
+            M = dbyr_identifier:value_to_term(jiffy:decode(Body)),
             {M, R1}
     end,
-    case dbyr_identifier:publish(Identifier, Metadata) of
+    case dbyr_identifier:publish(Identifier, [{Property, Value}]) of
         ok ->
             Req2 = set_cross_domain(Req1),
             Req3 = cowboy_req:set_resp_body(<<"true">>, Req2),
@@ -105,8 +112,3 @@ stringify(Reason) ->
 
 set_cross_domain(Req) ->
     cowboy_req:set_resp_header(<<"Access-Control-Allow-Origin">>, <<"*">>, Req).
-
-post_metadata(Body) ->
-    {DecodedBody} = jiffy:decode(Body),
-    {_, Metadata} = proplists:lookup(<<"metadata">>, DecodedBody),
-    Metadata.

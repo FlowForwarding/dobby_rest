@@ -131,28 +131,21 @@ delete link     | /link/vname1/vname2  | `DELETE`  | n/a       | true/false
 }
 ```
 
-###Metadata (not implemented)
+###Identifier Metadata
 
 Description | URI | Method | Request Body | Response Body
 --- | --- | --- | --- | ---
-get identifier metadata             | /identifier/identifier_name/metadata       | `GET`     | n/a       | Example 5
-get link metadata                   | /link/vname1/vname2/metadata             | `GET`     | n/a       | Example 5
 get identifier metadata property    | /identifier/identifier_name/metadata/ip             | `GET`     | n/a       | "1"
-get link metadata property          | /link/vname/vname2/metadata/creation_datetime     | `GET`     | n/a       | "2014-07-16T19:20:30+01:00"
-add identifier metadata             | /identifier/identifier_name/metadata/ip    | `POST`    | "2.2.2.2" | true/false
-add link metadata                   | /link/vname1/vname2/metadata/key          | `POST`    | "value"   | true/false
+add or update identifier metadata             | /identifier/identifier_name/metadata/ip    | `POST`    | "2.2.2.2" | true/false
 remove identifier metadata          | /identifier/identifier_name/metadata/ip    | `DELETE`  | n/a       | true/false
-remove link metadata                | /link/vname1/vname2/metadata/key          | `DELETE`  | n/a       | true/false
 
-####Example 5 - metadata JSON
-```
-{
-    "metadata":{
-       "key":"1",
-       "key2":"2"
-    }
-}
-```
+###Link Metadata (not implemented)
+
+Description | URI | Method | Request Body | Response Body
+--- | --- | --- | --- | ---
+get link metadata property          | /link/vname/vname2/metadata/creation_datetime     | `GET`     | n/a       | "2014-07-16T19:20:30+01:00"
+add link metadata                   | /link/vname1/vname2/metadata/key          | `POST`    | "value"   | true/false
+remove link metadata                | /link/vname1/vname2/metadata/key          | `DELETE`  | n/a       | true/false
 
 ###Search
 
@@ -184,8 +177,8 @@ search on identifier  | /identifier/vname1%2F2/search    |   `POST`  |   Example
 - traversal - graph traversal algorithm ("depth" for depth first or "breadth" for breadth first)
 - max_size - maximum number of identifiers in the result set (not implemented)
 - match_metadata - only follow links from identifiers with metadata matching these key/value pairs.  The identifier's metadata must match all of the key/value pairs.
-- match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs. (not implemented)
-- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included.
+- match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs.
+- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included. (not implemented)
 - match_terminal - stop the search when the identifer has metadata matching these key/value pairs.  The identifier's metadata mush match all of the key/value pairs. The identifier and link is included in the result.
 - result is a list of identifiers and links.
 

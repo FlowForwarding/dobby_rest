@@ -22,8 +22,9 @@ stop(_State) ->
 start_cowboy() ->
     Dispatch = cowboy_router:compile([
         {'_', [
-{"/identifier/[:identifier_val]", dbyr_identifier_handler, []},
-{"/identifier/[:identifier_val]/search", dbyr_identifier_search_handler, []},
+{"/identifier/:identifier_val", dbyr_identifier_handler, []},
+{"/identifier/:identifier_val/metadata/:property", dbyr_identifier_metadata_handler, []},
+{"/identifier/:identifier_val/search", dbyr_identifier_search_handler, []},
 {"/static/[...]", cowboy_static, {priv_dir, dobby_rest, "static"}}
         ]}
     ]),

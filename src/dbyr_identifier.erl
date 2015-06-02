@@ -3,16 +3,22 @@
 -define(REST_PUBLISHER, <<"dobby_rest">>).
 
 -export([to_json/2,
+         metadata_to_json/1,
          to_term/1,
+         value_to_term/1,
          to_resource/1,
          get_metadata/1,
          delete/1,
+         delete_metadata/2,
          publish/2,
          search/2]).
 
 to_json(Identifier, Metadata) ->
     % return json encoded identifier with metadata
     jiffy:encode(to_jiffy(Identifier, Metadata)).
+
+metadata_to_json(Metadata) ->
+    jiffy:encode(json_metadata(Metadata)).
 
 to_resource(Identifier) ->
     % return resource URI for identifier
@@ -21,11 +27,18 @@ to_resource(Identifier) ->
 to_term({KeyValues}) ->
     [{Key, term_metadata(Value)} || {Key, Value} <- KeyValues].
 
+value_to_term(Value) ->
+    term_metadata(Value).
+
 get_metadata(Identifier) ->
     dby:identifier(Identifier).
 
 delete(Identifier) ->
     dby:publish(?REST_PUBLISHER, {Identifier, delete}, [persistent]).
+
+delete_metadata(Identifier, Property) ->
+    dby:publish(?REST_PUBLISHER,
+                    {Identifier, [{Property, delete}]}, [persistent]).
 
 publish(Identifier, Metadata) ->
     dby:publish(?REST_PUBLISHER, {Identifier, Metadata}, [persistent]).
@@ -56,7 +69,7 @@ search(Identifier, Options) ->
 to_jiffy(Identifier, Metadata) ->
     {[
         {<<"identifier">>, uri_encode(Identifier)},
-        {<<"metdaata">>, json_metadata(Metadata)}
+        {<<"metadata">>, json_metadata(Metadata)}
     ]}.
 
 to_jiffy(Id1, Id2, Metadata) ->
