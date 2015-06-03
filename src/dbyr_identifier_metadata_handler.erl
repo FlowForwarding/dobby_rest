@@ -86,14 +86,14 @@ handle_json_method(Req, #{exists := false} = State, <<"GET">>) ->
 handle_json_method(Req0, #{exists := true,
                          value := Value} = State, <<"GET">>) ->
     Req1 = set_cross_domain(Req0),
-    {dbyr_identifier:metadata_to_json(Value), Req1, State};
+    {dbyr_encode:metadata_to_json(Value), Req1, State};
 handle_json_method(Req0, #{identifier := Identifier,
                            property := Property} = State, <<"POST">>) ->
     {Value, Req1} = case cowboy_req:body(Req0) of
         {ok, <<>>, R1} ->
             {[], R1};
         {ok, Body, R1} ->
-            M = dbyr_identifier:value_to_term(jiffy:decode(Body)),
+            M = dbyr_metadata:value_to_term(jiffy:decode(Body)),
             {M, R1}
     end,
     case dbyr_identifier:publish(Identifier, [{Property, Value}]) of

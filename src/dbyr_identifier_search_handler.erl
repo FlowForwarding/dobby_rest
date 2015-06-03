@@ -62,7 +62,7 @@ handle_json_method(Req0, #{identifier := Identifier} = State, <<"POST">>) ->
             {false, Req1, State};
         {ok, Body, Req1} ->
             Options = search_options(jiffy:decode(Body)),
-            case dbyr_identifier:search(Identifier, Options) of
+            case dbyr_search:search(Identifier, Options) of
                 {error, Reason} ->
                     ?ERROR("search error ~p~n", [Reason]),
                     {false, Req1, State};

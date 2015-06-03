@@ -1,4 +1,4 @@
--module(dbyr_identifier_handler).
+-module(dbyr_link_handler).
 
 -include("dbyr_logger.hrl").
 
@@ -20,8 +20,9 @@ init(_Transport, _Req, []) ->
     {upgrade, protocol, cowboy_rest}.
 
 rest_init(Req0, _Opts) ->
-    {Identifier, Req1} = cowboy_req:binding(identifier_val, Req0),
-    {ok, Req1, #{identifier => Identifier,
+    {Identifier1, Req1} = cowboy_req:binding(identifier1_val, Req0),
+    {Identifier2, Req1} = cowboy_req:binding(identifier2_val, Req0),
+    {ok, Req1, #{link => {Identifier1, Identifier2},
                  exists => false,
                  metadata => #{}}}.
 
@@ -45,8 +46,8 @@ options(Req0, State) ->
                                                     <<"content-type">>, Req0),
     {ok, Req1, State}.
 
-resource_exists(Req0, #{identifier := Identifier} = State) ->
-    case dbyr_identifier:get_metadata(Identifier) of
+resource_exists(Req0, #{link := Link} = State) ->
+    case dbyr_link:get_metadata(Link) of
         {error, Reason} -> 
             {ok, Req1} = cowboy_req:reply(500, [], stringify(Reason), Req0),
             {stop, Req1, State};
@@ -57,8 +58,8 @@ resource_exists(Req0, #{identifier := Identifier} = State) ->
             {true, Req0, State#{exists := true, metadata := Metadata}}
     end.
 
-delete_resource(Req0, #{identifier := Identifier} = State) ->
-    case dbyr_identifier:delete(Identifier) of
+delete_resource(Req0, #{link := Link} = State) ->
+    case dbyr_link:delete(Link) of
         {error, Reason} ->
             {ok, Req1} = cowboy_req:reply(500, [], stringify(Reason), Req0),
             {stop, Req1, State};
@@ -77,11 +78,11 @@ handle_json(Req0, State) ->
 handle_json_method(Req, #{exists := false} = State, <<"GET">>) ->
     {false, Req, State};
 handle_json_method(Req0, #{exists := true,
-                         identifier := Identifier,
+                         link := Link,
                          metadata := Metadata} = State, <<"GET">>) ->
     Req1 = set_cross_domain(Req0),
-    {dbyr_encode:to_json(Identifier, Metadata), Req1, State};
-handle_json_method(Req0, #{identifier := Identifier} = State, <<"POST">>) ->
+    {dbyr_encode:to_json(Link, Metadata), Req1, State};
+handle_json_method(Req0, #{link := Link} = State, <<"POST">>) ->
     {Metadata, Req1} = case cowboy_req:body(Req0) of
         {ok, <<>>, R1} ->
             {[], R1};
@@ -89,11 +90,11 @@ handle_json_method(Req0, #{identifier := Identifier} = State, <<"POST">>) ->
             M = dbyr_metadata:to_term(post_metadata(Body)),
             {M, R1}
     end,
-    case dbyr_identifier:publish(Identifier, Metadata) of
+    case dbyr_identifier:publish(Link, Metadata) of
         ok ->
             Req2 = set_cross_domain(Req1),
             Req3 = cowboy_req:set_resp_body(<<"true">>, Req2),
-            {{true, dbyr_identifier:to_resource(Identifier)}, Req3, State};
+            {{true, dbyr_link:to_resource(Link)}, Req3, State};
         {error, Reason} ->
             ?ERROR("publish error: ~p~n", [Reason]),
             Req2 = set_cross_domain(Req1),
