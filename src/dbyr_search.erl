@@ -10,7 +10,6 @@ search(Identifier, Options) ->
         {error, Reason} ->
             {error, Reason};
         {Identifiers, Links} ->
-            % XXX implement results_filter
             {[
                 {<<"identifiers">>, 
                     [dbyr_encode:to_jiffy(I, M) ||
@@ -42,11 +41,13 @@ dby_search_options([_ | Rest], Acc) ->
 subgraph(Options) ->
     % XXX implement max_size
     ControlFn = control_fn(Options),
+    FilterFn = filter_fn(Options),
     fun(Identifier, Metadata, [], {Identifiers, Links}) ->
         % always include the starting identifier
         {continue,
             {
-                dict:store(Identifier, {Identifier, Metadata}, Identifiers),
+                dict:store(Identifier, {Identifier, FilterFn(Metadata)},
+                                                                Identifiers),
                 Links
             }
         };
@@ -60,10 +61,11 @@ subgraph(Options) ->
                 C when C == stop; C == continue ->
                     {
                         dict:store(Identifier,
-                                    {Identifier, Metadata},
+                                    {Identifier, FilterFn(Metadata)},
                                     Identifiers),
                         dict:store(normal_link(Identifier, Neighbor),
-                                    {Identifier, Neighbor, LinkMetadata},
+                                    {Identifier, Neighbor,
+                                                    FilterFn(LinkMetadata)},
                                     Links)
                     }
             end
@@ -83,6 +85,26 @@ control_fn(Options) ->
                     MatchLinksFn(LinkMetadata),
                     continue)))
     end.
+
+filter_fn(#{results_filter := All}) when All == all; All == [] ->
+    fun(Metadata) ->
+        Metadata
+    end;
+filter_fn(#{results_filter := AllowedKeys}) ->
+    fun(Metadata) ->
+        maps_with(AllowedKeys, Metadata)
+    end.
+
+maps_with(WithKeys, Map) ->
+    maps:fold(
+        fun(Key, Value, Acc) ->
+            case lists:member(Key, WithKeys) of
+                false ->
+                    Acc;
+                true ->
+                    maps:put(Key, Value, Acc)
+            end
+        end, #{}, Map).
 
 match_links_fn(#{match_links := any}) ->
     fun(_) -> continue end;

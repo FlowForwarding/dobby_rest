@@ -95,12 +95,20 @@ search_options([{<<"traversal">>, <<"breadth">>} | Rest], Options) ->
     search_options(Rest, Options#{traversal := breadth});
 search_options([{<<"max_size">>, MaxSize} | Rest], Options) ->
     search_options(Rest, Options#{max_size := MaxSize});
+search_options([{<<"match_metadata">>, "all"} | Rest], Options) ->
+    search_options(Rest, Options#{match_metadata := all});
 search_options([{<<"match_metadata">>, {Match}} | Rest], Options) ->
     search_options(Rest, Options#{match_metadata := matches_list(Match)});
+search_options([{<<"match_links">>, <<"all">>} | Rest], Options) ->
+    search_options(Rest, Options#{match_links := all});
 search_options([{<<"match_links">>, {Match}} | Rest], Options) ->
     search_options(Rest, Options#{match_links := matches_list(Match)});
+search_options([{<<"results_filter">>, <<"all">>} | Rest], Options) ->
+    search_options(Rest, Options#{results_filter := all});
 search_options([{<<"results_filter">>, Filter} | Rest], Options) ->
     search_options(Rest, Options#{results_filter := Filter});
+search_options([{<<"match_terminal">>, <<"none">>} | Rest], Options) ->
+    search_options(Rest, Options#{match_terminal := none});
 search_options([{<<"match_terminal">>, {Match}} | Rest], Options) ->
     search_options(Rest, Options#{match_terminal := matches_list(Match)}).
 
