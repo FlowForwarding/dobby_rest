@@ -67,40 +67,23 @@ Delete identifier       | /identifier/identifier_name   | `DELETE`  | n/a       
 {"metadata":{"key":1,"key2":"2"}}
 ```
 
-###Links (not implemented)
+###Links
 
 Description | URI | Method | Request Body | Response Body
 --- | --- | --- | --- | ---
-create link     | /link                  | `POST`    | Example 3 | true/false
-get link        | /link/vname1/vname2  | `GET`     | n/a       | Example 4
-delete link     | /link/vname1/vname2  | `DELETE`  | n/a       | true/false
+create link     | /link/id1/id2        | `POST`    | Example 3 | true/false
+get link        | /link/id1/id2        | `GET`     | n/a       | Example 4
+delete link     | /link/id1/id2        | `DELETE`  | n/a       | true/false
 
-- A link name is created by appending the linked identifiers with a slash (/) in the middle, Ex: name1/name2.
-- Missing vertices will be created, when adding a link.
-- Links are not directed so link names are symmetric.  That is name1/name2 is the same as name2/name1.
+- Missing vertices will be created when adding a link.
+- Links are not directed so link names are symmetric.  That is idA/idB is the same as idB/idA.
 
 ####Example 3 - create link request body
 
 ```
 {
-  "link":[
-    {
-      "identifier":"vname1",
-      "metadata":{
-        "type":"resource",
-        "ip":"9.9.9.9"
-      }
-    },
-    {
-      "identifier":"vname2",
-      "metadata":{
-        "type":"id",
-        "ip":"10.151.1.71"
-      }
-    }
-  ],
   "metadata":{
-    "ip": "10.151.1.68"
+    "ip":"10.151.1.68"
   }
 }
 ```
@@ -109,24 +92,12 @@ delete link     | /link/vname1/vname2  | `DELETE`  | n/a       | true/false
 
 ```
 {
-  "link":[
-    {
-      "identifier":"vname1",
-      "metadata":{
-        "type":"resource",
-        "ip":"9.9.9.9"
-      }
-    },
-    {
-      "identifier":"vname2",
-      "metadata":{
-        "type":"id",
-        "ip":"10.151.1.71"
-      }
-    }
-  ],
+  "link":"id1/id2",
   "metadata":{
-    "ip": "10.151.1.68"
+    "ip":{
+      "value":"10.151.1.68",
+      "timestamp":"2015-06-04T02:51:32Z",
+      "publisher_id":"dobby_rest"
   }
 }
 ```
@@ -139,13 +110,13 @@ get identifier metadata property    | /identifier/identifier_name/metadata/ip   
 add or update identifier metadata             | /identifier/identifier_name/metadata/ip    | `POST`    | "2.2.2.2" | true/false
 remove identifier metadata          | /identifier/identifier_name/metadata/ip    | `DELETE`  | n/a       | true/false
 
-###Link Metadata (not implemented)
+###Link Metadata
 
 Description | URI | Method | Request Body | Response Body
 --- | --- | --- | --- | ---
-get link metadata property          | /link/vname/vname2/metadata/creation_datetime     | `GET`     | n/a       | "2014-07-16T19:20:30+01:00"
-add link metadata                   | /link/vname1/vname2/metadata/key          | `POST`    | "value"   | true/false
-remove link metadata                | /link/vname1/vname2/metadata/key          | `DELETE`  | n/a       | true/false
+get link metadata property          | /link/id1/id2/metadata/creation_datetime     | `GET`     | n/a       | "2014-07-16T19:20:30+01:00"
+add link metadata                   | /link/id1/id2/metadata/key          | `POST`    | "value"   | true/false
+remove link metadata                | /link/id1/id2/metadata/key          | `DELETE`  | n/a       | true/false
 
 ###Search
 
