@@ -15,9 +15,7 @@ to_resource({Identifier1, Identifier2}) ->
                       dbyr_encode:uri_encode(Identifier2)]).
 
 get_metadata({Identifier1, Identifier2}) ->
-    % XXX implement
-    dby:identifier(Identifier1),
-    dby:identifier(Identifier2).
+    dby:link_metadata(Identifier1, Identifier2).
 
 delete({Identifier1, Identifier2}) ->
     dby:publish(?REST_PUBLISHER, {Identifier1, Identifier2, delete},

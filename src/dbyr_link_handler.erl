@@ -20,8 +20,8 @@ init(_Transport, _Req, []) ->
     {upgrade, protocol, cowboy_rest}.
 
 rest_init(Req0, _Opts) ->
-    {Identifier1, Req1} = cowboy_req:binding(identifier1_val, Req0),
-    {Identifier2, Req1} = cowboy_req:binding(identifier2_val, Req0),
+    {Identifier1, Req1} = cowboy_req:binding(identifier1, Req0),
+    {Identifier2, Req1} = cowboy_req:binding(identifier2, Req0),
     {ok, Req1, #{link => {Identifier1, Identifier2},
                  exists => false,
                  metadata => #{}}}.
@@ -90,7 +90,7 @@ handle_json_method(Req0, #{link := Link} = State, <<"POST">>) ->
             M = dbyr_metadata:to_term(post_metadata(Body)),
             {M, R1}
     end,
-    case dbyr_identifier:publish(Link, Metadata) of
+    case dbyr_link:publish(Link, Metadata) of
         ok ->
             Req2 = set_cross_domain(Req1),
             Req3 = cowboy_req:set_resp_body(<<"true">>, Req2),
