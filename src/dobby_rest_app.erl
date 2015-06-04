@@ -26,6 +26,7 @@ start_cowboy() ->
 {"/identifier/:identifier_val/metadata/:property", dbyr_identifier_metadata_handler, []},
 {"/identifier/:identifier_val/search", dbyr_identifier_search_handler, []},
 {"/link/:identifier1/:identifier2", dbyr_link_handler, []},
+{"/link/:identifier1/:identifier2/metadata/:property", dbyr_link_metadata_handler, []},
 {"/static/[...]", cowboy_static, {priv_dir, dobby_rest, "static"}}
         ]}
     ]),

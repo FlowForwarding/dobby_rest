@@ -23,7 +23,7 @@ delete({Identifier1, Identifier2}) ->
 
 delete_metadata({Identifier1, Identifier2}, Property) ->
     dby:publish(?REST_PUBLISHER,
-                    {{Identifier1, Identifier2}, [{Property, delete}]},
+                    {Identifier1, Identifier2, [{Property, delete}]},
                                                                 [persistent]).
 
 publish({Identifier1, Identifier2}, Metadata) ->
