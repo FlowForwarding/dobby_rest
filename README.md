@@ -133,7 +133,7 @@ search on identifier  | /identifier/vname1%2F2/search    |   `POST`  |   Example
   "traversal":"depth",
   "max_size":100,
   "match_metadata":{
-      "type":"IPV4"
+      "type":["IPV4", "IPV6"]
   },
   "match_links":{
     "type":"IP-MAC"
@@ -149,8 +149,9 @@ search on identifier  | /identifier/vname1%2F2/search    |   `POST`  |   Example
 - max_size - maximum number of identifiers in the result set (not implemented)
 - match_metadata - only follow links from identifiers with metadata matching these key/value pairs.  The identifier's metadata must match all of the key/value pairs.
 - match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs.
-- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included. (not implemented)
 - match_terminal - stop the search when the identifer has metadata matching these key/value pairs.  The identifier's metadata mush match all of the key/value pairs. The identifier and link is included in the result.
+- For match_metadata, match_links, and match_terminal the value of the key/value match pair may be a single element or a list.  If the value is a single element then a match occurs when the metadata value in dobby matches the single element.  If the value in the key/value match pair is a list then a match occurs when the metadata avlue is dobby matches one of the elements of the list.
+- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included. (not implemented)
 - result is a list of identifiers and links.
 
 ###Example 7 - search response JSON

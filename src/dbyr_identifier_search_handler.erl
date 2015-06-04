@@ -96,10 +96,18 @@ search_options([{<<"traversal">>, <<"breadth">>} | Rest], Options) ->
 search_options([{<<"max_size">>, MaxSize} | Rest], Options) ->
     search_options(Rest, Options#{max_size := MaxSize});
 search_options([{<<"match_metadata">>, {Match}} | Rest], Options) ->
-    search_options(Rest, Options#{match_metadata := Match});
+    search_options(Rest, Options#{match_metadata := matches_list(Match)});
 search_options([{<<"match_links">>, {Match}} | Rest], Options) ->
-    search_options(Rest, Options#{match_links := Match});
+    search_options(Rest, Options#{match_links := matches_list(Match)});
 search_options([{<<"results_filter">>, Filter} | Rest], Options) ->
     search_options(Rest, Options#{results_filter := Filter});
 search_options([{<<"match_terminal">>, {Match}} | Rest], Options) ->
-    search_options(Rest, Options#{match_terminal := Match}).
+    search_options(Rest, Options#{match_terminal := matches_list(Match)}).
+
+matches_list(L) ->
+    [match_list(E) || E <- L].
+
+match_list(M = {_, L}) when is_list(L) ->
+    M;
+match_list({K, B}) ->
+    {K, [B]}.

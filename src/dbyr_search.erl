@@ -120,11 +120,11 @@ match_metadata(Metadata, Matches) ->
             Acc andalso match_one(Match, Metadata)
         end, true, Matches).
 
-match_one({Key, Value}, Metadata) ->
+match_one({Key, Values}, Metadata) ->
     case maps:find(Key, Metadata) of
         error -> false;
         {ok, Metadatum} ->
-            Value == maps:get(value, Metadatum)
+            lists:member(maps:get(value, Metadatum), Values)
     end.
 
 control_rank(_, stop) ->
