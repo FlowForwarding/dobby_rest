@@ -74,6 +74,7 @@ subgraph(Options) ->
 
 control_fn(Options) ->
     MatchLinksFn = match_links_fn(Options),
+    % XXX results filter should be in dobby?
     MatchMetaFn = match_meta_fn(Options),
     MatchTerminalFn = match_terminal_fn(Options),
     fun(Metadata, LinkMetadata) ->
