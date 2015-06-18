@@ -2,11 +2,16 @@
 
 -export([search/2]).
 
+-ifdef(TEST).
+-export([subgraph/1]).
+-endif.
+
 search(Identifier, Options) ->
     % XXX optimization - only install module once, not once per search
     {module, ?MODULE} = dby:install(?MODULE),
+    % XXX force breadth search to work around bug in dobby with depth search.
     case dby:search(subgraph(Options), {dict:new(), dict:new()}, Identifier,
-                            [{loop, link} | dby_search_options(Options)]) of
+                            [breadth, {loop, link} | dby_search_options(Options)]) of
         {error, Reason} ->
             {error, Reason};
         {Identifiers, Links} ->
@@ -31,10 +36,12 @@ dby_search_options([], Acc) ->
     Acc;
 dby_search_options([{max_depth, MaxDepth} | Rest], Acc) ->
     dby_search_options(Rest, [{max_depth, MaxDepth} | Acc]);
-dby_search_options([{traversal, depth} | Rest], Acc) ->
-    dby_search_options(Rest, [depth | Acc]);
-dby_search_options([{traversal, breadth} | Rest], Acc) ->
-    dby_search_options(Rest, [breadth | Acc]);
+% XXX force breadth search to work about bug in dobby with depth search
+% XXX see search/2 above.
+% dby_search_options([{traversal, depth} | Rest], Acc) ->
+%     dby_search_options(Rest, [depth | Acc]);
+% dby_search_options([{traversal, breadth} | Rest], Acc) ->
+%     dby_search_options(Rest, [breadth | Acc]);
 dby_search_options([_ | Rest], Acc) ->
     dby_search_options(Rest, Acc).
 
