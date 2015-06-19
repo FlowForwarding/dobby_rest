@@ -95,7 +95,7 @@ search_options([{<<"traversal">>, <<"breadth">>} | Rest], Options) ->
     search_options(Rest, Options#{traversal := breadth});
 search_options([{<<"max_size">>, MaxSize} | Rest], Options) ->
     search_options(Rest, Options#{max_size := MaxSize});
-search_options([{<<"match_metadata">>, "all"} | Rest], Options) ->
+search_options([{<<"match_metadata">>, <<"all">>} | Rest], Options) ->
     search_options(Rest, Options#{match_metadata := all});
 search_options([{<<"match_metadata">>, {Match}} | Rest], Options) ->
     search_options(Rest, Options#{match_metadata := matches_list(Match)});
