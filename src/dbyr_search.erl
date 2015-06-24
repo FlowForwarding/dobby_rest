@@ -11,7 +11,7 @@ search(Identifier, Options) ->
     {module, ?MODULE} = dby:install(?MODULE),
     % XXX force breadth search to work around bug in dobby with depth search.
     case dby:search(subgraph(Options), {dict:new(), dict:new()}, Identifier,
-                            [breadth, {loop, link} | dby_search_options(Options)]) of
+                            [{loop, link} | dby_search_options(Options)]) of
         {error, Reason} ->
             {error, Reason};
         {Identifiers, Links} ->
@@ -36,12 +36,10 @@ dby_search_options([], Acc) ->
     Acc;
 dby_search_options([{max_depth, MaxDepth} | Rest], Acc) ->
     dby_search_options(Rest, [{max_depth, MaxDepth} | Acc]);
-% XXX force breadth search to work about bug in dobby with depth search
-% XXX see search/2 above.
-% dby_search_options([{traversal, depth} | Rest], Acc) ->
-%     dby_search_options(Rest, [depth | Acc]);
-% dby_search_options([{traversal, breadth} | Rest], Acc) ->
-%     dby_search_options(Rest, [breadth | Acc]);
+  dby_search_options([{traversal, depth} | Rest], Acc) ->
+      dby_search_options(Rest, [depth | Acc]);
+  dby_search_options([{traversal, breadth} | Rest], Acc) ->
+      dby_search_options(Rest, [breadth | Acc]);
 dby_search_options([_ | Rest], Acc) ->
     dby_search_options(Rest, Acc).
 
