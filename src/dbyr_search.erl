@@ -195,7 +195,7 @@ found_path([], Path) ->
     Path;
 found_path([{Identifier, Metadata, LinkMetadata} | Rest], Path) ->
     found_path(Rest,
-        [fp_link(LinkMetadata), fp_identifier(Identifier, Metadata) | Path]).
+        [fp_identifier(Identifier, Metadata), fp_link(LinkMetadata) | Path]).
 
 fp_link(Metadata) ->
     #{element => link, metadata => Metadata}.
