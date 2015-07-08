@@ -76,12 +76,23 @@ handle_json_method(Req0, #{identifier := Identifier} = State, <<"POST">>) ->
 stringify(Reason) ->
     iolist_to_binary(io_lib:format("~p", [Reason])).
 
+% search options are:
+% max_depth => integer()
+% traversal => 'depth' | 'breadth'
+% max_size => integer()
+% match_metadata => 'all' | [{Key:binary(), [Value:binary()]}]
+% match_links => 'all' | [{Key:binary(), [Value:binary()]}]
+% match_path => [[#{element => 'identifier' | 'link',
+%                   metadata => [{Key:binary(), [Value:binary()]}]}]]
+% results_filter => 'all' | [Key:binary()]
+% match_terminal => 'none' | [{Key:binary(), [Value:binary()]}]
 search_options({Options}) ->
     search_options(Options, #{max_depth => 0,
                               traversal => depth,
                               max_size => 100,
                               match_metadata => any,
                               match_links => any,
+                              match_path => [],
                               results_filter => all,
                               match_terminal => none}).
 
@@ -103,6 +114,8 @@ search_options([{<<"match_links">>, <<"all">>} | Rest], Options) ->
     search_options(Rest, Options#{match_links := all});
 search_options([{<<"match_links">>, {Match}} | Rest], Options) ->
     search_options(Rest, Options#{match_links := matches_list(Match)});
+search_options([{<<"match_path">>, Paths} | Rest], Options) ->
+    search_options(Rest, Options#{match_path := match_paths(Paths)});
 search_options([{<<"results_filter">>, <<"all">>} | Rest], Options) ->
     search_options(Rest, Options#{results_filter := all});
 search_options([{<<"results_filter">>, Filter} | Rest], Options) ->
@@ -119,3 +132,21 @@ match_list(M = {_, L}) when is_list(L) ->
     M;
 match_list({K, B}) ->
     {K, [B]}.
+
+match_paths(Paths) ->
+    [path(P) || P <- Paths].
+
+path(Path) ->
+    [pathelement(E) || E <- Path].
+
+pathelement({Element}) ->
+    pathelement(Element, #{element => undefined, match_metadata => #{}}).
+
+pathelement([], Acc) ->
+    Acc;
+pathelement([{<<"element">>, <<"identifier">>} | Rest], Acc) ->
+    pathelement(Rest, Acc#{element := identifier});
+pathelement([{<<"element">>, <<"link">>} | Rest], Acc) ->
+    pathelement(Rest, Acc#{element := link});
+pathelement([{<<"metadata">>, {Match}} | Rest], Acc) ->
+    pathelement(Rest, Acc#{match_metadata := matches_list(Match)}).

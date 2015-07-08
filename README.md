@@ -13,11 +13,11 @@ RESTish interface to dobby, the graph store
 1. dobby must be running
 2. rel/dobby_rest/bin/dobby_rest console
 
-Note that some request errors are reported to the dobby_rest console.  Check the logs if dobby_rest returns status 500 to the REST client.
+Note that some request errors are reported to the dobby_rest console. Check the logs if dobby_rest returns status 500 to the REST client.
 
 ###Testing
 You can use the Google Chrome extension [Postman](https://chrome.google.com/webstore/detail/postman-rest-client/fdmmgilgnpjigdojojpjoooidkmcomcm?hl=en)
-to test the REST calls.  Import the dobby_rest.json collection for some examples.
+to test the REST calls. Import the dobby_rest.json collection for some examples.
 
 ###HTTP response codes
 
@@ -76,7 +76,7 @@ get link        | /link/id1/id2        | `GET`     | n/a       | Example 4
 delete link     | /link/id1/id2        | `DELETE`  | n/a       | true/false
 
 - Missing vertices will be created when adding a link.
-- Links are not directed so link names are symmetric.  That is idA/idB is the same as idB/idA.
+- Links are not directed so link names are symmetric. That is idA/idB is the same as idB/idA.
 
 ####Example 3 - create link request body
 
@@ -122,9 +122,7 @@ remove link metadata                | /link/id1/id2/metadata/key          | `DEL
 
 Description | URI | Method | Request Body | Response Body
 --- | --- | --- | --- | ---
-search on identifier  | /identifier/vname1%2F2/search    |   `POST`  |   Example 6 | Example 7
-
-- In the response object, the identifier value and the identifiers in the link value are URL encoded.
+search on identifier  | /identifier/vname1%2F2/search    |   `POST`  |   Example 6 | Example 8
 
 ###Example 6 - search request JSON body
 ```
@@ -144,17 +142,49 @@ search on identifier  | /identifier/vname1%2F2/search    |   `POST`  |   Example
   }
 }
 ```
-- max_depth - maximum search depth from starting identifier (e.g., vname1)
-- traversal - graph traversal algorithm ("depth" for depth first or "breadth" for breadth first)
-- max_size - maximum number of identifiers in the result set (not implemented)
-- match_metadata - only follow links from identifiers with metadata matching these key/value pairs. The identifier's metadata must match all of the key/value pairs. If not given or "all" (instead of a list) then all links are followed.
-- match_links - only follow links with metadata matching these key/value pairs.  The link's metadata must match all of the key/value pairs. If not given or "all" (instead of a list) then all links are followed.
-- match_terminal - stop the search when the identifer has metadata matching these key/value pairs. The identifier's metadata mush match all of the key/value pairs. The identifier and link is included in the result. If not given or "none" (instead of a list) then the search does not terminate by with a metadata match.
-- For match_metadata, match_links, and match_terminal the value of the key/value match pair may be a single element or a list.  If the value is a single element then a match occurs when the metadata value in dobby matches the single element.  If the value in the key/value match pair is a list then a match occurs when the metadata avlue is dobby matches one of the elements of the list.
-- results_filter - list of metadata keys to include in the metadata in the results.  If not given or "all" (instead of a list), then all of the metadata is included.
-- result is a list of identifiers and links.
+Parameter | Description
+--- | ---
+max_depth       | maximum search depth from starting identifier (e.g., vname1)
+traversal | graph traversal algorithm (`depth` for depth first or `breadth` for breadth first)
+max_size        | maximum number of identifiers in the result set (not implemented)
+match_metadata  | only follow links from identifiers with metadata matching these key/value pairs. The identifier's metadata must match all of the key/value pairs. If not given or `all` (instead of a list) then all links are followed.
+match_links     | only follow links with metadata matching these key/value pairs. The link's metadata must match all of the key/value pairs. If not given or `all` (instead of a list) then all links are followed.
+match_terminal  | stop the search when the identifer has metadata matching these key/value pairs. The identifier's metadata mush match all of the key/value pairs. The identifier and link is included in the result. If not given or `none` (instead of a list) then the search does not terminate by with a metadata match.
+results_filter  | list of metadata keys to include in the metadata in the results. If not given or `all` (instead of a list), then all of the metadata is included.
+match_path      | Describes a desired path in the graph to match against. All identifiers in matching paths are included in the results. The desired path is a list of elements indicating metadata to match against of the link or of the identifier in the path. The desired path may be a mix of identifiers and links. `match_links` and `match_metadata` may be used in conjunction with `match_path` in which case the `match_path` is checked after the other matches. See Example 8.
 
-###Example 7 - search response JSON
+- For match_metadata, match_links, and match_terminal the value of the key/value match pair may be a single element or a list. If the value is a single element then a match occurs when the metadata value in dobby matches the single element. If the value in the key/value match pair is a list then a match occurs when the metadata avlue is dobby matches one of the elements of the list.
+- The Result is a list of identifiers and links.
+- In the response object, the identifier value and the identifiers in the link value are URL encoded.
+
+###Example 7 - match_path example
+```
+{
+  "max_depth":10,
+  "traversal":"depth",
+  "match_path":[
+    [
+     {"element":"identifier","metadata":{"type":"of_switch"}},
+     {"element":"link","metadata":{"type":"port_of"}},
+     {"element":"identifier","metadata":{"type":"of_port"}},
+     {"element":"link","metadata":{"type":"connected_to"}},
+     {"element":"identifier","metadata":{"type":"of_port"}},
+     {"element":"link","metadata":{"type":"port_of"}},
+     {"element":"identifier","metadata":{"type":"of_switch"}}
+    ],
+    [
+     {"element":"identifier","metadata":{"type":"of_switch"}},
+     {"element":"identifier","metadata":{"type":"of_port"}},
+     {"element":"link","metadata":{"type":"connected_to"}},
+     {"element":"identifier","metadata":{"type":"endpoint"}}
+    ]
+  ]
+}
+```
+Looks for two different paths. The first path is a connection between
+two switches (of_switch, linked via a port_of to an of_port, the of_port linked via a connected_to to another of_port, linked via a port_of to an of_switch), and between a switch and an endpoint (of_switch linked by an unspecified link type to an of_port linked via a connected_to to an endpoint).
+
+###Example 8 - search response JSON
 ```
 [
     {
