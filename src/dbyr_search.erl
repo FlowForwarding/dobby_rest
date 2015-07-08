@@ -6,7 +6,7 @@
 -export([subgraph/1,
         normalize_path/1,
         found_path/3,
-        match_paths/2]).
+        match_paths/4]).
 -endif.
 
 search(Identifier, Options) ->
@@ -109,19 +109,17 @@ path_fn(#{match_path := []}, FilterFn) ->
         }
     end;
 path_fn(#{match_path := MatchPaths}, FilterFn) ->
-    NormalMatchPaths = normalize_paths(MatchPaths),
-    fun(Identifier, Metadata, Path, Acc = {Identifiers, Links}) ->
+    NormalMatchPaths = reverse_paths(normalize_paths(MatchPaths)),
+    fun(Identifier, Metadata, Path, Acc) ->
         FoundPath = found_path(Identifier, Metadata, Path),
-        case match_paths(NormalMatchPaths, FoundPath) orelse
-                match_paths(NormalMatchPaths, lists:reverse(FoundPath)) of
-            true ->
+        AccFn =
+            fun(MatchingPath, {Identifiers, Links}) ->
                 {
-                    dict_store_identifiers(Identifiers, FoundPath, FilterFn),
-                    dict_store_links(Links, FoundPath, FilterFn)
-                };
-            false ->
-                Acc
-        end
+                    dict_store_identifiers(Identifiers, MatchingPath, FilterFn),
+                    dict_store_links(Links, MatchingPath, FilterFn)
+                }
+            end,
+        match_paths(NormalMatchPaths, FoundPath, AccFn, Acc)
     end.
 
 % add the identifiers from the path to the dict
@@ -138,6 +136,9 @@ dict_store_identifiers(Identifiers, [#{element := identifier,
         Path, FilterFn).
 
 % add the links from the path to the dict
+dict_store_links(Links, [], _) ->
+    % nothing to add
+    Links;
 dict_store_links(Links, [#{}], _) ->
     % only the trailing identifier remains
     Links;
@@ -181,13 +182,20 @@ normalize_path([Element | Rest], Acc) ->
     % add to normalized path
         normalize_path(Rest, [Element | Acc]).
 
+% make reverse paths for all the paths.
+% return the original list plus all the reversed paths.
+reverse_paths(Paths) ->
+    [lists:reverse(Path) || Path <- Paths] ++ Paths.
+
 wild_identifier() ->
     #{element => identifier, match_metadata => any}.
 
 wild_link() ->
     #{element => link, match_metadata => any}.
 
-% create path structure from search fun args to match against
+% create path structure from search fun args to match against.
+% the first element of the list is the starting point.
+% match_path assumes this to anchor the search at the starting point.
 found_path(Identifier, Metadata, Path) ->
     found_path(Path, [fp_identifier(Identifier, Metadata)]).
 
@@ -204,30 +212,42 @@ fp_identifier(Identifier, Metadata) ->
     #{element => identifier, id => Identifier, metadata => Metadata}.
 
 % look for any of the paths in MatchPaths in FoundPaths
-match_paths(MatchPaths, FoundPath) ->
+match_paths(MatchPaths, FoundPath, AccFn, Acc0) ->
     lists:foldl(
-        fun(_, true) ->
-            true;
-           (MatchPath, _) ->
-            match_path(MatchPath, FoundPath)
-        end, false, MatchPaths).
+        fun(MatchPath, Acc) ->
+            AccFn(match_path(MatchPath, FoundPath, []), Acc)
+        end, Acc0, MatchPaths).
 
-match_path([], _) ->
-    % path matched pattern
-    true;
-match_path(MatchPath, FoundPath) when length(MatchPath) > length(FoundPath) ->
-    % found path is shorter than the pattern
-    false;
-match_path([#{match_metadata := any} | MatchPathRest], [_ | FoundPathRest]) ->
-    match_path(MatchPathRest, FoundPathRest);
+% XXX want to anchor the path match on the starting point.
+% but once we find that match in the path, should we also
+% search the rest of the path for additional matches?  This would
+% allow you to start at one switch and search the entire network
+% for connected switches.  Without the additional matches, the
+% path match stops after finding the neighbor switch.
+
+% match the found path against the pattern.
+% returns []  if no match, or the matching path if it does match.
+match_path([], _, Matched) ->
+    % path matched pattern, return match
+    Matched;
+match_path(MatchPath, FoundPath, _)
+                                when length(MatchPath) > length(FoundPath) ->
+    % found path is shorter than the pattern, no match
+    [];
+match_path([#{match_metadata := any} | MatchPathRest],
+           [FoundElement | FoundPathRest],
+           Matched) ->
+    match_path(MatchPathRest, FoundPathRest, [FoundElement | Matched]);
 match_path([#{match_metadata := MatchMetadata} | MatchPathRest],
-           [#{metadata := FoundMetadata} | FoundPathRest]) ->
+           [FoundElement = #{metadata := FoundMetadata} | FoundPathRest],
+           Matched) ->
     % match the metadata
     case match_metadata(FoundMetadata, MatchMetadata) of
         true ->
-            match_path(MatchPathRest, FoundPathRest);
+            % matches
+            match_path(MatchPathRest, FoundPathRest, [FoundElement | Matched]);
         false ->
-            false
+            []
     end.
 
 maps_with(WithKeys, Map) ->

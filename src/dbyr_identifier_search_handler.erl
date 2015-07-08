@@ -140,13 +140,13 @@ path(Path) ->
     [pathelement(E) || E <- Path].
 
 pathelement({Element}) ->
-    pathelement(Element, #{element => undefined, metadata => #{}}).
+    pathelement(Element, #{element => undefined, match_metadata => #{}}).
 
 pathelement([], Acc) ->
     Acc;
-pathelement([{<<"elemenet">>, <<"identifier">>} | Rest], Acc) ->
+pathelement([{<<"element">>, <<"identifier">>} | Rest], Acc) ->
     pathelement(Rest, Acc#{element := identifier});
-pathelement([{<<"elemenet">>, <<"link">>} | Rest], Acc) ->
+pathelement([{<<"element">>, <<"link">>} | Rest], Acc) ->
     pathelement(Rest, Acc#{element := link});
 pathelement([{<<"metadata">>, {Match}} | Rest], Acc) ->
     pathelement(Rest, Acc#{match_metadata := matches_list(Match)}).

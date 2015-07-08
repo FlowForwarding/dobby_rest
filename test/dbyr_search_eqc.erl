@@ -21,21 +21,26 @@ prop_normalize_path() ->
 % given a match path and a found path, found paths matching the match are
 % at least as long as the match path.
 prop_match_path() ->
-    ?FORALL(
+    numtests(500, ?FORALL(
         {MatchPath, FoundPath},
         {gen_match_path(), gen_found_path()},
         begin
             NormalMatchPath = dbyr_search:normalize_path(MatchPath),
-            Result = dbyr_search:match_paths([NormalMatchPath], FoundPath),
-            collect(Result,
-                case dbyr_search:match_paths([NormalMatchPath], FoundPath) of
-                    true ->
-                        length(FoundPath) >= length(NormalMatchPath);
-                    false ->
-                        true
+            [Result] = dbyr_search:match_paths(
+                [NormalMatchPath],
+                FoundPath,
+                fun(Path, Acc) -> [Path | Acc] end,
+                []),
+            Length = length(Result),
+            collect(Length,
+                case Length of
+                    0 ->
+                        true;
+                    Length ->
+                        Length =:= length(NormalMatchPath)
                 end
             )
-        end).
+        end)).
             
 % ------------------------------------------------------------------------------
 % Generators
