@@ -26,20 +26,23 @@ prop_match_path() ->
         {gen_match_path(), gen_found_path()},
         begin
             NormalMatchPath = dbyr_search:normalize_path(MatchPath),
-            [Result] = dbyr_search:match_paths(
+            Result = dbyr_search:match_paths(
                 [NormalMatchPath],
                 FoundPath,
                 fun(Path, Acc) -> [Path | Acc] end,
                 []),
-            Length = length(Result),
-            collect(Length,
-                case Length of
-                    0 ->
-                        true;
-                    Length ->
-                        Length =:= length(NormalMatchPath)
-                end
-            )
+            lists:foreach(
+                fun(R) ->
+                    Length = length(R),
+                    collect(Length, 
+                        case Length of
+                            0 ->
+                                true;
+                            Length ->
+                                Length = length(NormalMatchPath)
+                        end)
+                end, Result),
+            true
         end)).
             
 % ------------------------------------------------------------------------------

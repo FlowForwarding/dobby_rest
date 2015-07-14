@@ -14,7 +14,13 @@ dbyr_search_test_() ->
          {"no matches", fun search1/0}
         ,{"metadata match", fun search2/0}
         ,{"link match", fun search3/0}
-        ,{"path match", fun search4/0}
+        ,{"path match A", fun search4a/0}
+        ,{"path match B", fun search4b/0}
+        ,{"path match C", fun search4c/0}
+        ,{"path match D", fun search4d/0}
+        ,{"path match E", fun search4e/0}
+        ,{"path match F", fun search4f/0}
+        ,{"path match G", fun search4g/0}
        ]
      }
     }.
@@ -63,19 +69,9 @@ search3() ->
                              [{<<"id1">>, #{}, metadata_type(<<"matchme">>)}],
                              new_state()).
 
-search4() ->
-    % match path
-    SearchOptions = maps:put(match_path,
-        [
-         [
-          #{element => identifier, match_metadata => [{<<"type">>, [<<"first">>]}]},
-          #{element => identifier, match_metadata => [{<<"type">>, [<<"second">>]}]},
-          #{element => identifier, match_metadata => [{<<"type">>, [<<"third">>]}]}
-         ]
-        ], search_options()),
-    SearchFn = dbyr_search:subgraph(SearchOptions),
-
+search4a() ->
     % find path
+    SearchFn = path_search_fn(),
     {_, {IdentifiersA, LinksA}} =
         SearchFn(<<"id1">>, metadata_type(<<"first">>),
                  [
@@ -83,9 +79,11 @@ search4() ->
                   {<<"id3">>, metadata_type(<<"third">>), #{}}
                  ], new_state()),
     ?assertEqual(2, dict:size(LinksA)),
-    ?assertEqual(3, dict:size(IdentifiersA)),
+    ?assertEqual(3, dict:size(IdentifiersA)).
 
+search4b() ->
     % find path (reverse)
+    SearchFn = path_search_fn(),
     {_, {IdentifiersB, LinksB}} =
         SearchFn(<<"id3">>, metadata_type(<<"third">>),
                  [
@@ -93,9 +91,11 @@ search4() ->
                   {<<"id1">>, metadata_type(<<"first">>), #{}}
                  ], new_state()),
     ?assertEqual(2, dict:size(LinksB)),
-    ?assertEqual(3, dict:size(IdentifiersB)),
+    ?assertEqual(3, dict:size(IdentifiersB)).
 
+search4c() ->
     % do not find path
+    SearchFn = path_search_fn(),
     {_, {IdentifiersC, LinksC}} =
         SearchFn(<<"id1">>, metadata_type(<<"one">>),
                  [
@@ -104,6 +104,74 @@ search4() ->
                  ], new_state()),
     ?assertEqual(0, dict:size(LinksC)),
     ?assertEqual(0, dict:size(IdentifiersC)).
+
+search4d() ->
+    % find path if not at starting point
+    SearchFn = path_search_fn(),
+    {_, {IdentifiersA, LinksA}} =
+        SearchFn(<<"id1">>, metadata_type(<<"nomatch">>),
+                 [
+                  {<<"id2">>, metadata_type(<<"first">>), #{}},
+                  {<<"id3">>, metadata_type(<<"second">>), #{}},
+                  {<<"id4">>, metadata_type(<<"third">>), #{}}
+                 ], new_state()),
+    ?assertEqual(2, dict:size(LinksA)),
+    ?assertEqual(3, dict:size(IdentifiersA)).
+
+search4e() ->
+    % find path if not at starting point (reverse)
+    SearchFn = path_search_fn(),
+    {_, {IdentifiersB, LinksB}} =
+        SearchFn(<<"id3">>, metadata_type(<<"nomatch">>),
+                 [
+                  {<<"id4">>, metadata_type(<<"third">>), #{}},
+                  {<<"id2">>, metadata_type(<<"second">>), #{}},
+                  {<<"id1">>, metadata_type(<<"first">>), #{}}
+                 ], new_state()),
+    ?assertEqual(2, dict:size(LinksB)),
+    ?assertEqual(3, dict:size(IdentifiersB)).
+
+search4f() ->
+    % find path duplicated, no overlap
+    SearchFn = path_search_fn(),
+    {_, {IdentifiersA, LinksA}} =
+        SearchFn(<<"id1">>, metadata_type(<<"nomatch">>),
+                 [
+                  {<<"id2">>, metadata_type(<<"first">>), #{}},
+                  {<<"id3">>, metadata_type(<<"second">>), #{}},
+                  {<<"id4">>, metadata_type(<<"third">>), #{}},
+                  {<<"id5">>, metadata_type(<<"first">>), #{}},
+                  {<<"id6">>, metadata_type(<<"second">>), #{}},
+                  {<<"id7">>, metadata_type(<<"third">>), #{}}
+                 ], new_state()),
+    ?assertEqual(4, dict:size(LinksA)),
+    ?assertEqual(6, dict:size(IdentifiersA)).
+
+search4g() ->
+    % find path overlapping
+    SearchOptions = maps:put(match_path,
+        [
+         [
+          #{element => identifier, match_metadata => [{<<"type">>, [<<"first">>]}]},
+          #{element => identifier, match_metadata => [{<<"type">>, [<<"second">>]}]},
+          #{element => identifier, match_metadata => [{<<"type">>, [<<"third">>]}]},
+          #{element => identifier, match_metadata => [{<<"type">>, [<<"first">>]}]}
+         ]
+        ], search_options()),
+    SearchFn = dbyr_search:subgraph(SearchOptions),
+    {_, {IdentifiersA, LinksA}} =
+        SearchFn(<<"id1">>, metadata_type(<<"nomatch">>),
+                 [
+                  {<<"id2">>, metadata_type(<<"first">>), #{}},
+                  {<<"id3">>, metadata_type(<<"second">>), #{}},
+                  {<<"id4">>, metadata_type(<<"third">>), #{}},
+                  {<<"id5">>, metadata_type(<<"first">>), #{}},
+                  {<<"id6">>, metadata_type(<<"second">>), #{}},
+                  {<<"id7">>, metadata_type(<<"third">>), #{}},
+                  {<<"id8">>, metadata_type(<<"first">>), #{}}
+                 ], new_state()),
+    ?assertEqual(6, dict:size(LinksA)),
+    ?assertEqual(7, dict:size(IdentifiersA)).
 
 % helpers
 
@@ -122,6 +190,17 @@ search_options() ->
       match_path => [],
       results_filter => all,
       match_terminal => none}.
+
+path_search_fn() ->
+    SearchOptions = maps:put(match_path,
+        [
+         [
+          #{element => identifier, match_metadata => [{<<"type">>, [<<"first">>]}]},
+          #{element => identifier, match_metadata => [{<<"type">>, [<<"second">>]}]},
+          #{element => identifier, match_metadata => [{<<"type">>, [<<"third">>]}]}
+         ]
+        ], search_options()),
+    dbyr_search:subgraph(SearchOptions).
 
 tr() ->
     dbg:start(),
