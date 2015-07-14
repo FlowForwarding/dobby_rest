@@ -47,7 +47,6 @@ dby_search_options([_ | Rest], Acc) ->
     dby_search_options(Rest, Acc).
 
 subgraph(Options) ->
-    % XXX implement max_size
     ControlFn = control_fn(Options),
     FilterFn = filter_fn(Options),
     PathFn = path_fn(Options, FilterFn),
@@ -212,18 +211,22 @@ fp_identifier(Identifier, Metadata) ->
     #{element => identifier, id => Identifier, metadata => Metadata}.
 
 % look for any of the paths in MatchPaths in FoundPaths
+match_paths(_, [], _, Acc) ->
+    Acc;
 match_paths(MatchPaths, FoundPath, AccFn, Acc0) ->
-    lists:foldl(
+    Acc1 = lists:foldl(
         fun(MatchPath, Acc) ->
-            AccFn(match_path(MatchPath, FoundPath, []), Acc)
-        end, Acc0, MatchPaths).
+            case match_path(MatchPath, FoundPath, []) of
+                [] ->
+                    Acc;
+                MatchingPath ->
+                    AccFn(MatchingPath, Acc)
+            end
+        end, Acc0, MatchPaths),
+    match_paths(MatchPaths, next_found_path(FoundPath), AccFn, Acc1).
 
-% XXX want to anchor the path match on the starting point.
-% but once we find that match in the path, should we also
-% search the rest of the path for additional matches?  This would
-% allow you to start at one switch and search the entire network
-% for connected switches.  Without the additional matches, the
-% path match stops after finding the neighbor switch.
+next_found_path([_, _ | NextFoundPath]) -> NextFoundPath;
+next_found_path(_) -> [].
 
 % match the found path against the pattern.
 % returns []  if no match, or the matching path if it does match.
